@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GauchoBadge</string>
+    <string name="ShowBadgeButtonText">Show Badge</string>
+</resources>
