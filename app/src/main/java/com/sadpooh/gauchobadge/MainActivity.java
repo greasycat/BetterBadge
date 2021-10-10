@@ -1,39 +1,43 @@
 package com.sadpooh.gauchobadge;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements OnBadgeCompleteListener {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity implements IActivityOperationListener {
 
     private TextView textView = null;
     boolean text = false;
+
+    @SuppressWarnings("deprecation")
+    public static Spanned fromHtml(String html) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            return Html.fromHtml(html);
+        }
+    }
+
+    public void ShowBadge(View view) {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textView = (TextView) findViewById(R.id.textView);
-//        new StudentHealthHandler(this).execute(new StudentAccount("1","2"));
+        textView = findViewById(R.id.textView);
+//        new StudentServiceHandler(this).execute(new StudentAccount("",""));
+        StudentServiceRunnable studentServiceRunnable = new StudentServiceRunnable();
+        studentServiceRunnable.initRunnable(this);
+        new Thread(studentServiceRunnable).start();
     }
 
-    public String getTestHTML()
-    {
-            return StudentHealthHandler.readFromInputStream(getResources().openRawResource(R.raw.dualauth));
-    }
-
-
-    public void ShowBadge(View view) {
-    }
-
-
-    @Override
-    public void onTestShow(String text) {
-        textView.setText(text);
-    }
 
     @Override
     public void onBadgeComplete(Bitmap badge) {
@@ -43,5 +47,19 @@ public class MainActivity extends AppCompatActivity implements OnBadgeCompleteLi
     @Override
     public void onBadgeFailure(String error) {
 
+    }
+
+    @Override
+    public void onTestShow(String text) {
+        textView.setText(text);
+//        setHTML(text);
+    }
+
+    void setHTML(String html) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            textView.setText(Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT));
+        } else {
+            textView.setText(Html.fromHtml(html));
+        }
     }
 }
